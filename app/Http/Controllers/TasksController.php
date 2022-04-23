@@ -88,8 +88,13 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {              // idの値で投稿を検索して取得
+    {   // idの値で投稿を検索して取得
         $task = \App\Task::findOrFail($id);
+
+        // 認証済みユーザ（閲覧者）がその投稿の所有者である場合
+        if (!\Auth::id() === $task->user_id) {
+            return redirect('/');
+        }
 
                // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
@@ -108,9 +113,13 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-                // idの値で投稿を検索して取得
+        // idの値で投稿を検索して取得
         $task = \App\Task::findOrFail($id);
 
+        // 認証済みユーザ（閲覧者）がその投稿の所有者である場合
+        if (!\Auth::id() === $task->user_id) {
+           return redirect('/');
+        }
      
              // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
@@ -130,10 +139,14 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {          // idの値で投稿を検索して取得
+     {   
+       // idの値で投稿を検索して取得
         $task = \App\Task::findOrFail($id);
 
-    
+        // 認証済みユーザ（閲覧者）がその投稿の所有者である場合は、投稿を削除
+        if (!\Auth::id() === $task->user_id) {
+            return redirect('/');
+        }
         $request->validate([
             'status' => 'required|max:10',   // 追加
             'content' => 'required|max:255',
