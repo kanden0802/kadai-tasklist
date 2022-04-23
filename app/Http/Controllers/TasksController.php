@@ -14,8 +14,9 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
+
     {   
-            $data = [];
+        $data = [];
         if (\Auth::check()) { // 認証済みの場合
             // 認証済みユーザを取得
             $user = \Auth::user();
@@ -57,7 +58,7 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {   
         
       $request->validate([
             'status' => 'required|max:10',   // 追加
@@ -77,7 +78,7 @@ class TasksController extends Controller
        ]);
 
         // トップページへリダイレクトさせる
-        return back();
+        return redirect('/');
     }
 
     /**
@@ -87,7 +88,9 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
+    {              // idの値で投稿を検索して取得
+        $task = \App\Task::findOrFail($id);
+
                // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
@@ -105,6 +108,10 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
+                // idの値で投稿を検索して取得
+        $task = \App\Task::findOrFail($id);
+
+     
              // idの値でタスクを検索して取得
         $task = Task::findOrFail($id);
 
@@ -112,6 +119,7 @@ class TasksController extends Controller
         return view('tasks.edit', [
             'task' => $task,
         ]);
+        
     }
 
     /**
@@ -122,7 +130,11 @@ class TasksController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {   $request->validate([
+    {          // idの値で投稿を検索して取得
+        $task = \App\Task::findOrFail($id);
+
+    
+        $request->validate([
             'status' => 'required|max:10',   // 追加
             'content' => 'required|max:255',
         ]);
@@ -154,7 +166,7 @@ class TasksController extends Controller
             $task->delete();
         }
 
-        // 前のURLへリダイレクトさせる
+        // トップページへリダイレクトさせる
         return redirect('/');
     }
 }
